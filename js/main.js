@@ -12,44 +12,101 @@ var map =
 [0,0,0,0,0,0,0,0,0,0]
 ];
 
+/*
+ * Load the map and get everything ready for the Play state.
+ */
+var loadingState = function () {
+    
+    var parseMap = function (json) {
+        
+    }
+    
+    this.setup = function () {
+        console.log("Changing State: loadingState");
+        // TODO: Parse the map.
+    }
+    
+    this.update = function () {
+        // TODO
+    }
+    
+    this.draw = function () {
+        // TODO
+    }
+}
+
+/*
+ * Defines the normal Play state.
+ */
 var playState = function () {
-    var player,
-        blocks,
-        MAP_WIDTH = map[0].length,
-        MAP_HEIGHT = map.length,
-        tileMap,
+    var player  ,
+        blocks  ,
+        map     = jaws.assets.get("map/test.json"),
+        terrain = map.layers[0],
+        player  = map.layers[1],
+        tileMap ,
         viewport;
     
     // Constants
     var CELL_SIZE    = 32;
+
+    this.setup = function (options) {
         
-    this.setup = function () {
+        console.log("Switching to Play state: ", arguments);
+        
+        // Map.
+        var mapH = map.height -1,
+            mapW = map.width - 1,
+            data = terrain.data,
+            len  = data.length;
+            
+        
         // Setup map sprites.
         blocks = new jaws.SpriteList();
         
-        for (var mapY=0; mapY<MAP_HEIGHT; mapY++) {
-            for (var mapX=0; mapX<MAP_WIDTH; mapX++) {
-                // Don't draw passable tiles.
-                if (map[mapY][mapX]) continue;
-                
-                blocks.push(
-                    new jaws.Sprite({
-                        "image": "img/impassable.png",
-                        "x"    : mapX * CELL_SIZE,
-                        "y"    : mapY * CELL_SIZE
-                    })
-                );
+        // 
+        var x=0 , y=0, i=0;
+        for (i; i<len; i++) {
+            if (x > mapW) {
+                x=0;
+                y++;
             }
+            
+            var curTile = map.tilesets[data[i]-1];
+            
+            // Don't draw passable tiles.
+            if (curTile.name === "passable") {
+                x++;
+                continue;
+            };
+            
+            console.log("tile index: ", data[i]);
+            console.log(x, ", ", y);
+            console.log("CurTile: ", curTile);
+            
+            blocks.push(
+                new jaws.Sprite({
+                    "image": "img/impassable.png",
+                    "x"    : x * CELL_SIZE,
+                    "y"    : y * CELL_SIZE
+                })
+            );
+            
+            // Advance X coordinate.
+            x++;
         }
         
         viewport = new jaws.Viewport({
-            "max_x": MAP_WIDTH  * CELL_SIZE,
-            "max_y": MAP_HEIGHT * CELL_SIZE
+            "width": 10 * 32,
+            "height": 10 * 32,
+            "max_x": map.width  * CELL_SIZE,
+            "max_y": map.height * CELL_SIZE
         });
+        window.top.viewport = viewport;
         
         tileMap = new jaws.TileMap({
             "cell_size": [CELL_SIZE, CELL_SIZE],
-            "size"     : [MAP_WIDTH, MAP_HEIGHT]
+            "size"     : [map.width, map.height]
         });
         tileMap.push(blocks);
         
@@ -59,6 +116,7 @@ var playState = function () {
             "x"    : 3 * CELL_SIZE,
             "y"    : 3 * CELL_SIZE
         });
+        window.top.player = player;
         
         player.validMove = function (x, y) {
             var r = player.rect();
@@ -80,6 +138,7 @@ var playState = function () {
         player.down = function () {
             if (player.validMove(0, CELL_SIZE)) {
                 player.moveTo(player.x, player.y + CELL_SIZE);
+               console.log("move to ", player.x, ", ", (player.y + CELL_SIZE));
             }
         }
         player.right = function () {
@@ -104,21 +163,47 @@ var playState = function () {
     },
     
     this.update = function () {
-        
+        viewport.centerAround(player);
     },
     
     this.draw = function () {
         jaws.clear();
+        // viewport.centerAround(player);
         viewport.drawTileMap(tileMap);
         player.draw();
     }
 }
 
+/*
+ * Inventory view
+ */
+var inventoryState = function () {
+    this.setup = function () {
+        // TODO
+    }
+    
+    this.update = function() {
+        // TODO
+    }
+    
+    this.draw = function () {
+        // TODO
+    }
+}
+
 // Start the game!
 jaws.onload = function () {
-    jaws.assets.add(["img/passable.png", "img/impassable.png", "img/player.png"]);
+    jaws.assets.add([
+                     "img/passable.png",
+                     "img/impassable.png",
+                     "img/player.png",
+                     "map/test.json"
+                     ]);
+    
+   // Load all resources and start game.
     jaws.start(playState, {
         "width": 10 * 32,
         "height": 10 * 32
     });
+    
 }

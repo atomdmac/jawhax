@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="25" height="25" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="impassable" tilewidth="32" tileheight="32">
+  <image source="../img/impassable.png" width="32" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="passable" value="false"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="2" name="passable" tilewidth="32" tileheight="32">
+  <image source="../img/passable.png" width="32" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="passable" value="false"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="terrain" width="25" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzVVUEOwDAIsvv/o3s3aUXAZTt4MkKDYFdErBfqGaw/cCCzFUfVUzlOve4eKxyHtjcsl3Zdjht2V3Ont76UDzVDrMfRe5T7nTzmOXTnijdQ7zK5QDV1+qziUD2Evlu9dYx+Ko/zD2A9meeZXU3fSycOwjFdG+fIBEA=
+  </data>
+ </layer>
+ <objectgroup name="entities" width="25" height="25">
+  <object name="player" type="entity" x="128" y="64" width="32" height="32"/>
+ </objectgroup>
+</map>
