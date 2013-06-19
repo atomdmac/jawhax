@@ -113,8 +113,8 @@ var playState = function () {
         // Set-up player.
         player = new jaws.Sprite({
             "image": "img/player.png",
-            "x"    : 3 * CELL_SIZE,
-            "y"    : 3 * CELL_SIZE
+            "x"    : 10 * CELL_SIZE,
+            "y"    : 10 * CELL_SIZE
         });
         window.top.player = player;
         
@@ -138,7 +138,6 @@ var playState = function () {
         player.down = function () {
             if (player.validMove(0, CELL_SIZE)) {
                 player.moveTo(player.x, player.y + CELL_SIZE);
-               console.log("move to ", player.x, ", ", (player.y + CELL_SIZE));
             }
         }
         player.right = function () {
@@ -158,7 +157,9 @@ var playState = function () {
         jaws.on_keydown("right", player.right);
         jaws.on_keydown("left",  player.left);
         
-        jaws.preventDefaultKeys(["up", "down", "left", "right", "space"])
+        jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
+        
+        viewport.drawTileMap(tileMap);
         
     },
     
@@ -168,9 +169,8 @@ var playState = function () {
     
     this.draw = function () {
         jaws.clear();
-        // viewport.centerAround(player);
         viewport.drawTileMap(tileMap);
-        player.draw();
+        viewport.draw(player);
     }
 }
 
