@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="25" height="25" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="impassable" tilewidth="32" tileheight="32">
   <image source="../img/impassable.png" width="32" height="32"/>
   <tile id="0">
@@ -16,12 +16,12 @@
    </properties>
   </tile>
  </tileset>
- <layer name="terrain" width="25" height="25">
+ <layer name="terrain" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzVVUEOwDAIsvv/o3s3aUXAZTt4MkKDYFdErBfqGaw/cCCzFUfVUzlOve4eKxyHtjcsl3Zdjht2V3Ont76UDzVDrMfRe5T7nTzmOXTnijdQ7zK5QDV1+qziUD2Evlu9dYx+Ko/zD2A9meeZXU3fSycOwjFdG+fIBEA=
+   eJzt18tyIzEIBVAn///Rs51K2d3AfQBtLbSKhdA9oqvy83q9fs4atX7PGrE2ejz5rUV6nnDfbd+D6nl3v59wN5WJsv/qWVe/m2TxLSaffjPNQW3m7oXpka2F5Od0mmCS9WDm6X63mz0c73urR2WvywO5Y8SD6YKeg+yP/j7zveq4H8OGURutgXhEznLfseLCqsvqreKROae6j2WisPi/Nrs3tQf7+8WqhVowlsNDnWO25naPq9+wPNAZy9RUfq/YFlWP6L7pM9Jpg7wnxAPNxOXhsmH0fuWRuVvkb0iejlljO1Tuna1ZvRf6xpn5MFxUc12Ztcqdqv2h2bHrsuYw6xGt5ZoR9VtmW1TvinqwZkRlkcmxezZYHpX35fRgmUzzYM97pDbDguGRsWB7VPphZsK2mOYReX+oB2LCzB3J0fmWvs0jmx/bo1ov6sGY+U91nJmz3zO7psKj8jaeZoHmEKmj7KXLAzmL8c4Qj8z+ah2nB3IWa/YzeWZzzNwbsXB6qGef7RGZW7ZFtwd7T9SDaYJk0uXBdHR7VE3YHsyzkX4ze1EPponCgjlD1V5VHtkZyebCcKi8G6XFdI/K/GWyRBxdFmoPhgkjO9Z8sSyOx6yF5qjyiOSNvuPu7Bl5PMWjO3uWhdPj3d7s3yd7sL6rWY/IW696VNYWg4kef/dus3C8ny6P6bPB6K/S61aPSVkrLDZ5bHHo8qj0hpyxyQPpb4PHpu/UUzzuet3kEe2X9XaR3ro9ovdAnad6RO+RzTLrkcmUMX/ovky26NxGe0ezuvNgnZGtw8o46xHth/32kPmoWGTuxcxY5aEyufp9pe+nejBmJLsUs6foVenBmBGWR6R/xOJ48Fe3hcMjY/LtFi6PT/ed4jHFAs0YvfcEC8RD2Yv77leZOPOaZNHh4Xq7kXs5LbI9deeusLi7m8uj8ka6s1dZfLpb12xE30h3/sdjrgfT4t3d2LaVu2zxUFs4PSp1WHM40UNxxjQP9jyrPJT1lTkxz2DNiTIvtbfLQzHPbovjMcuC6YHOocNjqoHKI5KryuPujI5Mui2u+uj0mO6g9njXk9pjylxMtHB7sPLpsnB4ZE0UHu5MJltkTaoezGyeOhfdHs5sNll86pflwc7oGy0me2RyQs74Ng+1yUaLbg8kN6XFtNlweiAZqiwqHow62RpKD2aWLhOmbWWv2mOTiavW8bi/h7MW2yPj0p35xKXyuKrffefJS+1xFscjsqe797OOx8R1PGat4zFrZf/HOEu//gHmpTy2
   </data>
  </layer>
- <objectgroup name="entities" width="25" height="25">
-  <object name="player" type="entity" x="128" y="64" width="32" height="32"/>
+ <objectgroup name="entities" width="100" height="100">
+  <object name="player" type="entity" x="96" y="92" width="32" height="32"/>
  </objectgroup>
 </map>
