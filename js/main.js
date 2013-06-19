@@ -44,11 +44,9 @@ var playState = function () {
         map     = jaws.assets.get("map/test.json"),
         terrain = map.layers[0],
         player  = map.layers[1],
+        cellSize = map.tilewidth, // Assume square cells.
         tileMap ,
         viewport;
-    
-    // Constants
-    var CELL_SIZE    = 32;
 
     this.setup = function (options) {
         
@@ -80,15 +78,11 @@ var playState = function () {
                 continue;
             };
             
-            console.log("tile index: ", data[i]);
-            console.log(x, ", ", y);
-            console.log("CurTile: ", curTile);
-            
             blocks.push(
                 new jaws.Sprite({
                     "image": "img/impassable.png",
-                    "x"    : x * CELL_SIZE,
-                    "y"    : y * CELL_SIZE
+                    "x"    : x * cellSize,
+                    "y"    : y * cellSize
                 })
             );
             
@@ -97,15 +91,13 @@ var playState = function () {
         }
         
         viewport = new jaws.Viewport({
-            "width": 10 * 32,
-            "height": 10 * 32,
-            "max_x": map.width  * CELL_SIZE,
-            "max_y": map.height * CELL_SIZE
+            "max_x": map.width  * cellSize,
+            "max_y": map.height * cellSize
         });
         window.top.viewport = viewport;
         
         tileMap = new jaws.TileMap({
-            "cell_size": [CELL_SIZE, CELL_SIZE],
+            "cell_size": [cellSize, cellSize],
             "size"     : [map.width, map.height]
         });
         tileMap.push(blocks);
@@ -113,8 +105,8 @@ var playState = function () {
         // Set-up player.
         player = new jaws.Sprite({
             "image": "img/player.png",
-            "x"    : 10 * CELL_SIZE,
-            "y"    : 10 * CELL_SIZE
+            "x"    : 10 * cellSize,
+            "y"    : 10 * cellSize
         });
         window.top.player = player;
         
@@ -131,31 +123,55 @@ var playState = function () {
             return false;
         }
         player.up = function () {
-            if (player.validMove(0, -CELL_SIZE)) {
-                player.moveTo(player.x, player.y - CELL_SIZE);
+            if (player.validMove(0, -cellSize)) {
+                player.moveTo(player.x, player.y - cellSize);
             }
         }
         player.down = function () {
-            if (player.validMove(0, CELL_SIZE)) {
-                player.moveTo(player.x, player.y + CELL_SIZE);
+            if (player.validMove(0, cellSize)) {
+                player.moveTo(player.x, player.y + cellSize);
+            }
+        }
+        player.upright = function () {
+            if (player.validMove(cellSize, -cellSize)) {
+                player.move(cellSize, -cellSize);
+            }
+        }
+        player.upleft = function () {
+            if (player.validMove(-cellSize, -cellSize)) {
+                player.move(-cellSize, -cellSize);
+            }
+        }
+        player.downright = function () {
+            if (player.validMove(cellSize, cellSize)) {
+                player.move(cellSize, cellSize);
+            }
+        }
+        player.downleft = function () {
+            if (player.validMove(-cellSize, cellSize)) {
+                player.move(-cellSize, cellSize);
             }
         }
         player.right = function () {
-            if (player.validMove(CELL_SIZE, 0)) {
-                player.moveTo(player.x + CELL_SIZE, player.y);
+            if (player.validMove(cellSize, 0)) {
+                player.moveTo(player.x + cellSize, player.y);
             }
         }
         player.left = function () {
-            if (player.validMove(-CELL_SIZE, 0)) {
-                player.moveTo(player.x - CELL_SIZE, player.y);
+            if (player.validMove(-cellSize, 0)) {
+                player.moveTo(player.x - cellSize, player.y);
             }
         }
         
         // Controls
-        jaws.on_keydown("up",    player.up);
-        jaws.on_keydown("down",  player.down);
-        jaws.on_keydown("right", player.right);
-        jaws.on_keydown("left",  player.left);
+        jaws.on_keydown("k",    player.up);
+        jaws.on_keydown("u",    player.upright);
+        jaws.on_keydown("y",    player.upleft);
+        jaws.on_keydown("j",    player.down);
+        jaws.on_keydown("n",    player.downright);
+        jaws.on_keydown("b",    player.downleft);
+        jaws.on_keydown("l",    player.right);
+        jaws.on_keydown("h",    player.left);
         
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
         
@@ -202,7 +218,7 @@ jaws.onload = function () {
     
    // Load all resources and start game.
     jaws.start(playState, {
-        "width": 10 * 32,
+        "width": 30 * 32,
         "height": 10 * 32
     });
     
