@@ -16,6 +16,11 @@ var Player = function (playerData) {
     player._tweenObj = null;
     
     player._startMove = function (direction) {
+        // Abort if move is already in progress.
+        if (player._tweenObj) {
+            return;
+        }
+        
         var delta;
         switch (direction) {
             case "N":
@@ -118,24 +123,6 @@ var Player = function (playerData) {
             return;
         } else {
             this._tweenObj = null;
-        }
-        
-        if (jaws.pressed("up right", true)) {
-            player.upright();
-        } else if (jaws.pressed("up left", true)) {
-            player.upleft();
-        } else if (jaws.pressed("down right", true)) {
-            player.downright();
-        } else if (jaws.pressed("down left", true)) {
-            player.downleft();
-        } else if (jaws.pressed("up")) {
-            player.up();
-        } else if (jaws.pressed("down")) {
-            player.down();
-        } else if (jaws.pressed("left")) {
-            player.left();
-        } else if (jaws.pressed("right" )) {
-            player.right();
         }
     }
     
