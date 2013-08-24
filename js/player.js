@@ -5,10 +5,9 @@ var Player = function (playerData) {
                         y    : playerData.y
                     });
     
-    // TODO: Get this from tilemap somehow...
     var cellsize = {
-        x: playerData.cellX || 32,
-        y: playerData.cellY || 32
+        x: playerData.cellSize.x || 32,
+        y: playerData.cellSize.y || 32
     };
     
     var collisionMap = playerData.collisionMap;

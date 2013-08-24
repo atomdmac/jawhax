@@ -104,10 +104,14 @@ var playState = function () {
         // Set-up player.
         // TODO: Make sure play position is valid (ie. whole cell value, passable, etc).
         player = new Player({
-            "image": "img/player.png",
-            "x"    : player.x,
-            "y"    : player.y,
-            "collisionMap": tileMap
+            image    : "img/player.png",
+            x        : player.x,
+            y        : player.y,
+            cellSize : {
+                x: cellSize,
+                y: cellSize
+            },
+            collisionMap: tileMap
         });
         
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
