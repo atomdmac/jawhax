@@ -43,7 +43,7 @@ var playState = function () {
         blocks  ,
         map     = jaws.assets.get("map/test.json"),
         terrain = map.layers[0],
-        player  = map.layers[1],
+        player  = map.layers[1].objects[0],
         cellSize = map.tilewidth, // Assume square cells.
         tileMap ,
         viewport;
@@ -57,7 +57,6 @@ var playState = function () {
             mapW = map.width - 1,
             data = terrain.data,
             len  = data.length;
-            
         
         // Setup map sprites.
         blocks = new jaws.SpriteList();
@@ -103,67 +102,16 @@ var playState = function () {
         tileMap.push(blocks);
         
         // Set-up player.
-        player = new jaws.Sprite({
+        // TODO: Make sure play position is valid (ie. whole cell value, passable, etc).
+        player = new Player({
             "image": "img/player.png",
-            "x"    : 10 * cellSize,
-            "y"    : 10 * cellSize
+            "x"    : player.x,
+            "y"    : player.y,
+            "collisionMap": tileMap
         });
         window.top.player = player;
-        
-        player.validMove = function (x, y) {
-            var r = player.rect();
-            var nr = new jaws.Rect(r.x, r.y, r.width, r.height);
-            nr.move(x, y);
-            nr.resize(-1, -1);
-            
-            var collisions = tileMap.atRect(nr);
-            if (collisions.length === 0) {
-                return true;
-            }
-            return false;
-        }
-        player.up = function () {
-            if (player.validMove(0, -cellSize)) {
-                player.moveTo(player.x, player.y - cellSize);
-            }
-        }
-        player.down = function () {
-            if (player.validMove(0, cellSize)) {
-                player.moveTo(player.x, player.y + cellSize);
-            }
-        }
-        player.upright = function () {
-            if (player.validMove(cellSize, -cellSize)) {
-                player.move(cellSize, -cellSize);
-            }
-        }
-        player.upleft = function () {
-            if (player.validMove(-cellSize, -cellSize)) {
-                player.move(-cellSize, -cellSize);
-            }
-        }
-        player.downright = function () {
-            if (player.validMove(cellSize, cellSize)) {
-                player.move(cellSize, cellSize);
-            }
-        }
-        player.downleft = function () {
-            if (player.validMove(-cellSize, cellSize)) {
-                player.move(-cellSize, cellSize);
-            }
-        }
-        player.right = function () {
-            if (player.validMove(cellSize, 0)) {
-                player.moveTo(player.x + cellSize, player.y);
-            }
-        }
-        player.left = function () {
-            if (player.validMove(-cellSize, 0)) {
-                player.moveTo(player.x - cellSize, player.y);
-            }
-        }
-        
         // Controls
+        /*
         jaws.on_keydown("k",    player.up);
         jaws.on_keydown("u",    player.upright);
         jaws.on_keydown("y",    player.upleft);
@@ -172,6 +120,7 @@ var playState = function () {
         jaws.on_keydown("b",    player.downleft);
         jaws.on_keydown("l",    player.right);
         jaws.on_keydown("h",    player.left);
+        */
         
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
         
@@ -181,6 +130,7 @@ var playState = function () {
     
     this.update = function () {
         viewport.centerAround(player);
+        player.tick();
     },
     
     this.draw = function () {
