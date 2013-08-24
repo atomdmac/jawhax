@@ -109,18 +109,6 @@ var playState = function () {
             "y"    : player.y,
             "collisionMap": tileMap
         });
-        window.top.player = player;
-        // Controls
-        /*
-        jaws.on_keydown("k",    player.up);
-        jaws.on_keydown("u",    player.upright);
-        jaws.on_keydown("y",    player.upleft);
-        jaws.on_keydown("j",    player.down);
-        jaws.on_keydown("n",    player.downright);
-        jaws.on_keydown("b",    player.downleft);
-        jaws.on_keydown("l",    player.right);
-        jaws.on_keydown("h",    player.left);
-        */
         
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
         
