@@ -12,6 +12,112 @@ var map =
 [0,0,0,0,0,0,0,0,0,0]
 ];
 
+var TiledMap = function (json) {
+    
+    var _json = json;
+    
+    this.getMapSize = function () {
+        return {
+            width : _json.width - 1,
+            height: _json.height - 1
+        }
+    }
+    
+    this.getCellSize = function () {
+        return {
+            width : _json.tilewidth,
+            height: _json.tileheight
+        }
+    }
+    
+    this.getLayer = function (name) {
+        var len = _json.layers.length,
+            i   = 0;
+        for (i; i<len; i++) {
+            if (_json.layers[i].name === name) {
+                return _json.layers[i];
+            }
+        }
+        return false;
+    }
+    
+    this.getCellProperty = function (x, y, layerName, propertyName) {
+        var layer = this.getLayer(layerName);
+        if (layer) {
+            var tileSetIndex = layer.data[(x * y) + x],
+                tileSet      = _json.tilesets[tileSetIndex],
+                firstGID     = tile
+                tileProps    = tileSet.tileproperties[tileSetIndex - tileset.firstgid];
+            return tileProps[propertyName];
+        } else {
+            throw("Layer '" + layerName + "' not found.");
+        }
+    }
+    
+    function _parseMap () {
+        var layers   = _json.layers,
+            len      = layers.length,
+            i        = 0,
+            curLayer = null;
+        for (i; i<len; i++) {
+            curLayer = layers[i];
+            // TODO: Parse Object layers, too!
+            if (curLayer.type === "tilelayer") {
+                _parseTileLayer(curLayer);
+            }
+        }
+    }
+    
+    function _parseTileLayer (layer) {
+        var data = layer.data,
+            len  = data.length,
+            sprites  = new jaws.SpriteList(),
+            cellSize = this.getCellSize(),
+            mapSize  = this.getMapSize(),
+            tileMap  = new jaws.TileMap({
+                "cell_size": [cellSize.width, cellSize.height],
+                "size"     : [mapSize.width,  mapSize.height]
+            });
+        
+        var x=0, y=0, i=0;
+        for (i; i<len; i++) {
+            if (x > mapSize.width) {
+                x=0;
+                y++;
+            }
+            
+            var curTile = _json.tilesets[data[i]-1];
+            
+            // Don't draw passable tiles.
+            if (curTile.name === "passable") {
+                x++;
+                continue;
+            };
+            
+            // TODO: Load map assets dynamically.
+            sprites.push(
+                new jaws.Sprite({
+                    "image": "img/impassable.png",
+                    "x"    : x * mapSize.width,
+                    "y"    : y * mapSize.height
+                })
+            );
+            
+            // Advance X coordinate.
+            x++;
+        }
+        
+        // Add sprites to jaws.TileMap for this layer.
+        tileMap.push(sprites);
+        
+        // Add reference to jaws.TileMap instance to layer object.
+        layer.tileMap = tileMap;
+    }
+    
+    // Initialize our map data!
+    _parseMap(json);
+};
+
 /*
  * Load the map and get everything ready for the Play state.
  */
