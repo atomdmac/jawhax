@@ -1,8 +1,10 @@
 var Player = function (playerData) {
     var player = new jaws.Sprite({
-                        image: playerData.image,
-                        x    : playerData.x,
-                        y    : playerData.y
+                        image : playerData.image,
+                        x     : playerData.x,
+                        y     : playerData.y,
+                        width : playerData.width,
+                        height: playerData.height
                     });
     
     var cellsize = {

@@ -1,11 +1,18 @@
-var TiledMap = function (json) {
+var TiledMap = function (json, options) {
     
-    var _json = json;
+    var self  = this,
+        _json = json,
+        // TODO: Expose the assets object so we can do things like set up a player sprite.
+        _assets = new jaws.Assets();
+        
+    this.__defineGetter__("assets", function () {
+        return _assets;
+    });
     
     this.getMapSize = function () {
         return {
-            width : _json.width - 1,
-            height: _json.height - 1
+            width : _json.width,
+            height: _json.height
         }
     }
     
@@ -38,7 +45,7 @@ var TiledMap = function (json) {
         // we know that we can stop as soon as we find a "gid" that is larger
         // than the given one.
         for (i; i<len; i++) {
-            if (tileSets[i].firstgid < tilegid) {
+            if (tileSets[i].firstgid <= tilegid) {
                 returnTileSet = tileSets[i];
             } else {
                 break;
@@ -49,9 +56,9 @@ var TiledMap = function (json) {
     
     this.getCellProperty = function (x, y, layerName, propertyName) {
         var layer = this.getLayer(layerName);
-        var tilegid = layer.data[(x * y) + x],
-            tileSet      = this.getTileSet(tilegid),
-            tileProps    = tileSet.tileproperties[tilegid - tileSet.firstgid];
+        var tilegid = layer.data[(x * y) + x];
+        var    tileSet      = this.getTileSet(tilegid);
+        var    tileProps    = tileSet.tileproperties[tilegid - tileSet.firstgid];
         return tileProps[propertyName];
     }
     
@@ -80,8 +87,16 @@ var TiledMap = function (json) {
             curLayer = layers[i];
             // TODO: Parse Object layers, too!
             if (curLayer.type === "tilelayer") {
-                // _parseTileLayer(curLayer);
+                _parseTileLayer(curLayer);
             }
+            else if (curLayer.type === "objectgroup") {
+                _parseObjectLayer(curLayer);
+            }
+        }
+        
+        // Alert callback now that loading and parsing has finished.
+        if (options && options.onfinish) {
+            options.onfinish();
         }
     }
     
@@ -92,17 +107,14 @@ var TiledMap = function (json) {
             imgUrl;
         for (i; i<len; i++) {
             imgUrl = tileSets[i].image;
+            // TODO: Figure out a better way to get a valid path to assets.
             imgUrl = imgUrl.substring(3);
-            console.log(imgUrl);
-            jaws.assets.add(imgUrl);
+            _assets.add(imgUrl);
         }
-        jaws.assets.loadAll({
-            onload: function () {
-                console.log("All map assets loaded!");
-            },
-            onerror: function () {
-                console.log("Error loading map assets.", arguments);
-            }
+        _assets.loadAll({
+            onfinish: _onAssetsFinish,
+            onload: _onAssetsLoad,
+            onerror: _onAssetsError
         })
     }
     
@@ -110,8 +122,8 @@ var TiledMap = function (json) {
         var data = layer.data,
             len  = data.length,
             sprites  = new jaws.SpriteList(),
-            cellSize = this.getCellSize(),
-            mapSize  = this.getMapSize(),
+            cellSize = self.getCellSize(),
+            mapSize  = self.getMapSize(),
             tileMap  = new jaws.TileMap({
                 "cell_size": [cellSize.width, cellSize.height],
                 "size"     : [mapSize.width,  mapSize.height]
@@ -119,12 +131,12 @@ var TiledMap = function (json) {
         
         var x=0, y=0, i=0;
         for (i; i<len; i++) {
-            if (x > mapSize.width) {
+            if (x > mapSize.width - 1) {
                 x=0;
                 y++;
             }
             
-            var curTileSet = this.getTileSet([data[i]-1]);
+            var curTileSet = self.getTileSet([data[i]]);
             
             // Don't draw passable tiles.
             if (curTileSet.name === "passable") {
@@ -132,19 +144,22 @@ var TiledMap = function (json) {
                 continue;
             };
             
+            // TODO: Figure out a better way to get a valid path to assets.
+            var imgSrc  = _assets.get(curTileSet.image.substr(3));
+            
             // TODO: Load map assets dynamically.
-            /*
             sprites.push(
                 new jaws.Sprite({
-                    "image": this.getCellProperty(x, y, layer.name, "image"),
-                    "x"    : x * mapSize.width,
-                    "y"    : y * mapSize.height
+                    "image": imgSrc,
+                    "x"    : x * cellSize.width,
+                    "y"    : y * cellSize.height
                 })
             );
-            */
             // Advance X coordinate.
             x++;
         }
+        
+        console.log("Sprite Length: ", sprites.length);
         
         // Add sprites to jaws.TileMap for this layer.
         tileMap.push(sprites);
@@ -153,6 +168,36 @@ var TiledMap = function (json) {
         layer.tileMap = tileMap;
     }
     
+    // TODO: Finish _parseObjectLayer
+    function _parseObjectLayer(layer) {
+        var objects = layer.objects,
+            len  = objects.length,
+            sprites  = new jaws.SpriteList(),
+            cellSize = self.getCellSize(),
+            mapSize  = self.getMapSize(),
+            tileMap  = new jaws.TileMap({
+                "cell_size": [cellSize.width, cellSize.height],
+                "size"     : [mapSize.width,  mapSize.height]
+            });
+    }
+    
+    function _onAssetsLoad() {
+        // TODO: _onAssetsLoad
+        console.log("Map asset loaded: ", arguments);
+    }
+    
+    function _onAssetsError() {
+        // TODO: _onAssetsError
+        console.log("Map asset error: ", arguments);
+    }
+    
+    function _onAssetsFinish() {
+        // TODO: _onAssetsFinish
+        console.log("Map assets loaded: ", arguments);
+        _parseMap(_json);
+    }
+    
     // Initialize our map data!
-    _parseMap(json);
+    _loadAssets(_json.tilesets);
+   //  _parseMap(json);
 };

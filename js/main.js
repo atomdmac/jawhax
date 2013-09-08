@@ -39,49 +39,56 @@ var loadingState = function () {
  * Defines the normal Play state.
  */
 var playState = function () {
-    var player  ,
-        blocks  ,
-        map     = jaws.assets.get("map/test.json"),
-        viewport;
+    var player,
+        viewport,
+        tiledMap,
+        cellSize,
+        mapSize,
+        terrainLayer;
 
     this.setup = function (options) {
         
         console.log("Switching to Play state: ", arguments);
         
-        /*viewport = new jaws.Viewport({
-            "max_x": map.width  * cellSize,
-            "max_y": map.height * cellSize
-        });
-        window.top.viewport = viewport;
+        tiledMap = options.tiledMap;
+        
+        cellSize = tiledMap.getCellSize();
+        mapSize  = tiledMap.getMapSize();
+        terrainLayer = tiledMap.getLayer("terrain");
         
         // Set-up player.
         // TODO: Make sure play position is valid (ie. whole cell value, passable, etc).
         player = new Player({
-            image    : "img/player.png",
+            image    : tiledMap.assets.get("img/player.png"),
             // TODO: Load player x/y coords from map.
+            // TODO: Load player h/w from map.
             x        : 64,
             y        : 64,
+            width    : 32,
+            height   : 32,
             cellSize : {
-                x: cellSize,
-                y: cellSize
+                x: 32,
+                y: 32
             },
-            collisionMap: tileMap
+            collisionMap: terrainLayer.tileMap
         });
         
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
-        */
         
-        var mapData = new TiledMap(map);
+        viewport = new jaws.Viewport({
+            "max_x": mapSize.width  * cellSize.width,
+            "max_y": mapSize.height * cellSize.height
+        });
+        window.top.viewport = viewport;
         
-        console.log("mapData = ", mapData);
         
-        // viewport.drawTileMap(tileMap);
+        
+        console.log(terrainLayer.tileMap);
         
     },
     
     this.update = function () {
-       /*
-        *viewport.centerAround(player);
+        viewport.centerAround(player);
         
         if (jaws.pressed("up right", true)) {
             player.upright();
@@ -102,13 +109,13 @@ var playState = function () {
         }
         
         player.tick();
-        */
     },
     
     this.draw = function () {
+        
         jaws.clear();
-        // viewport.drawTileMap(tileMap);
-        // viewport.draw(player);
+        viewport.drawTileMap(terrainLayer.tileMap);
+        viewport.draw(player);
     }
 }
 
@@ -131,16 +138,46 @@ var inventoryState = function () {
 
 // Start the game!
 jaws.onload = function () {
-    jaws.assets.add([
-                     /*"img/passable.png",
-                     "img/impassable.png",
-                     "img/player.png",*/
+    jaws.init({width: 30 * 32, height: 10 *32});
+    var mapLoader = new jaws.Assets();
+    mapLoader.add([
                      "map/test.json"
                      ]);
     
-   // Load all resources and start game.
-    jaws.start(playState, {
-        "width": 30 * 32,
-        "height": 10 * 32
+    /*
+    mapLoader.loadAll({
+        onfinish: function () {
+            console.log("map loaded!", jaws.assets.get("map/test.json"));
+            var tiledMap = new TiledMap(jaws.assets.get("map/test.json"),
+                            {
+                                onfinish: function () {
+                                    console.log("Map Assets loaded!")
+                                    var loop = new jaws.GameLoop(new playState(), {
+                                        "width": 30 * 32,
+                                        "height": 10 * 32
+                                    },
+                                    {
+                                        tiledMap: tiledMap
+                                    });
+                                    loop.start();
+                                }
+                            });
+        }
     });
+    */
+    mapLoader.loadAll({
+        onfinish: function () {
+            console.log("Map JSON loaded.");
+            
+            var tiledMap = new TiledMap(mapLoader.get("map/test.json"),
+                                {
+                                    onfinish: function () {
+                                        console.log("Map assets loaded.");
+                                        
+                                        jaws.start(playState, {}, {tiledMap: tiledMap});
+                                    }
+                                });
+            
+        }
+    })
 }
