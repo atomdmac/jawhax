@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sprite GID Helper</title>
+    <!--
+        This is a utility for quickly identifying a tile's "tilegid" (as defined
+        by the Tiled map editor) in a sprite sheet.  Given a cell size and an
+        image/sprite sheet, this allows a user to click on the sprite sheet and
+        have the "tilegid" returned via console.log().
+    -->
+    <script type="text/javascript">
+        function init() {
+            var ts = document.getElementById("tileset"),
+                canvasRect = ts.getBoundingClientRect();
+            ts.addEventListener("mousedown", function (e) {
+                var cellSize = 32,
+                    cellX    = Math.floor((e.pageX - canvasRect.top) / cellSize),
+                    cellY    = Math.floor((e.pageY - canvasRect.left)/ cellSize),
+                    cellW    = Math.floor(ts.width  / cellSize),
+                    cellH    = Math.floor(ts.height / cellSize);
+                console.log( (cellY * cellW) + (cellX) );
+            });
+        }
+    </script>
+</head>
+<body onload="init();">
+    <img id="tileset" src="img/nethack-tileset-32x32b.png" />
+</body>
+</html>
