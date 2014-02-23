@@ -37,8 +37,6 @@ var TiledMap = function (json, options) {
      * Search through a layer's object and return the first one that matches the
      * given criteria.  By default, the search field is "name".
      *
-     * TODO: Add ability to return multiple objs.
-     *
      * @param layerName {String} Name/ID of the layer to search.
      * @param matchValue {String} The value to match.
      * @param field {String} The field on each object to search.  Defaults to "name".
@@ -62,7 +60,7 @@ var TiledMap = function (json, options) {
             }
             return returnVals;
         }
-    },
+    };
     
     /**
      * Return the tileset object that contains the tile with the given GID.
@@ -70,25 +68,35 @@ var TiledMap = function (json, options) {
      * @param tilegid {Number}
      * @return Object
      */
+    
+    // Cache results as each query is made so we can look them up faster later.
+    var _tileSetsCache = {};
     this.getTileSet = function (tilegid) {
-        var tileSets = _json.tilesets,
-            len      = tileSets.length,
-            i        = 0,
-            // Return FALSE if tile set can't be found.
-            returnTileSet = false;
-        
-        // Since we sorted the tile sets in order of their "firstgid" properties
-        // we know that we can stop as soon as we find a "gid" that is larger
-        // than the given one.
-        for (i; i<len; i++) {
-            if (tileSets[i].firstgid <= tilegid) {
-                returnTileSet = tileSets[i];
+        if (!_tileSetsCache[tilegid]) {
+            var tileSets = _json.tilesets,
+                len      = tileSets.length,
+                i        = 0,
+                // Return FALSE if tile set can't be found.
+                returnTileSet = false;
+            
+            // Since we sorted the tile sets in order of their "firstgid" properties
+            // we know that we can stop as soon as we find a "gid" that is larger
+            // than the given one.
+            for (i; i<len; i++) {
+                if (tileSets[i].firstgid <= tilegid) {
+                    returnTileSet = tileSets[i];
+                } else {
+                    break;
+                }
+            }
+            if (!returnTileSet) {
+                return false;
             } else {
-                break;
+                _tileSetsCache[tilegid] = returnTileSet;
             }
         }
-        return returnTileSet;
-    }
+        return _tileSetsCache[tilegid];
+    };
     
     /**
      * Return the image associated with the given tile.
@@ -96,20 +104,21 @@ var TiledMap = function (json, options) {
      * @param tilegid {Number}
      * @return Canvas
      */
-    var _tileImages = {};
+    // Cache results as each query is made so we can look them up faster later.
+    var _tileImagesCache = {};
     this.getTileImage = function (tilegid) {
-        if (!_tileImages[tilegid]) {
+        if (!_tileImagesCache[tilegid]) {
             var ts     = this.getTileSet(tilegid);
             if (!ts.spriteSheet) debugger;
             var frames = ts.spriteSheet.frames,
                 index  = tilegid - ts.firstgid;
             if (index >= 0) {
-                _tileImages[tilegid] = frames[index];
+                _tileImagesCache[tilegid] = frames[index];
             } else {
                 throw ("No such sprite found with gid '" + tilegid + "'");
             }
         }
-        return _tileImages[tilegid];
+        return _tileImagesCache[tilegid];
     }
     
     /**
@@ -203,7 +212,6 @@ var TiledMap = function (json, options) {
                 continue;
             };
             
-            // TODO: Figure out a better way to get a valid path to assets.
             var curImage = self.getTileImage(data[i]);
             
             sprites.push(
