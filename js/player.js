@@ -90,7 +90,7 @@ var Player = function (playerData) {
         player._tweenObj = new FrameTween;
         player._tweenObj.start(this, newCoords.x,
                                      newCoords.y,
-                                     30);
+                                     5);
     }
     
     player.up = function () {
