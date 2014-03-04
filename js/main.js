@@ -55,20 +55,21 @@ var playState = function () {
         cellSize = tiledMap.getCellSize();
         mapSize  = tiledMap.getMapSize();
         terrainLayer = tiledMap.getLayer("terrain");
+        floorLayer   = tiledMap.getLayer("floor");
         
         // Set-up player.
         // TODO: Make sure play position is valid (ie. whole cell value, passable, etc).
         player = new Player({
-            image    : tiledMap.assets.get("img/player.png"),
+            image    : tiledMap.getTileImage(284), // tiledMap.assets.get("img/player.png"),
             // TODO: Load player x/y coords from map.
             // TODO: Load player h/w from map.
             x        : 64,
             y        : 64,
-            width    : 32,
-            height   : 32,
+            width    : 16,
+            height   : 16,
             cellSize : {
-                x: 32,
-                y: 32
+                x: 16,
+                y: 16
             },
             collisionMap: terrainLayer.tileMap
         });
@@ -80,8 +81,6 @@ var playState = function () {
             "max_y": mapSize.height * cellSize.height
         });
         window.top.viewport = viewport;
-        
-        
         
         console.log(terrainLayer.tileMap);
         
@@ -114,6 +113,7 @@ var playState = function () {
     this.draw = function () {
         
         jaws.clear();
+        viewport.drawTileMap(floorLayer.tileMap);
         viewport.drawTileMap(terrainLayer.tileMap);
         viewport.draw(player);
     }
@@ -138,10 +138,10 @@ var inventoryState = function () {
 
 // Start the game!
 jaws.onload = function () {
-    jaws.init({width: 30 * 32, height: 10 *32});
+    jaws.init({width: 30 * 16, height: 30 *16});
     var mapLoader = new jaws.Assets();
     mapLoader.add([
-                     "map/test.json"
+                     "map/test2.json"
                      ]);
     
     /*
@@ -169,7 +169,7 @@ jaws.onload = function () {
         onfinish: function () {
             console.log("Map JSON loaded.");
             
-            var tiledMap = new TiledMap(mapLoader.get("map/test.json"),
+            var tiledMap = new TiledMap(mapLoader.get("map/test2.json"),
                                 {
                                     onfinish: function () {
                                         console.log("Map assets loaded.");
