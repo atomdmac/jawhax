@@ -166,7 +166,7 @@ jaws.onload = function () {
     });
     */
     mapLoader.loadAll({
-        onfinish: function () {
+        onload: function () {
             console.log("Map JSON loaded.");
             
             var tiledMap = new TiledMap(mapLoader.get("map/test2.json"),

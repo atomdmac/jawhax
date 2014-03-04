@@ -274,9 +274,9 @@ var TiledMap = function (json, options) {
             _assets.add(imgUrl);
         }
         _assets.loadAll({
-            onfinish: _onAssetsFinish,
-            onload  : _onAssetsLoad,
-            onerror : _onAssetsError
+            onload    : _onAssetsFinish,
+            onprogress: _onAssetsLoad,
+            onerror   : _onAssetsError
         })
     }
     
