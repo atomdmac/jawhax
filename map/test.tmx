@@ -16,12 +16,20 @@
    </properties>
   </tile>
  </tileset>
+ <tileset firstgid="3" name="player" tilewidth="32" tileheight="32">
+  <image source="../img/player.png" width="32" height="32"/>
+ </tileset>
  <layer name="terrain" width="100" height="100">
   <data encoding="base64" compression="zlib">
    eJzt1UGSIzEIRFF77n/o3nZMdLkg+QmowgutXJKAB/L79Xq9v2vV+gesjTF15kHesSk32tqZg6tOTkuiXltmT805m2OlDrR/h4f7bVDuIt4Ixzx2e5xgQsdP5n2Kh2KieNA1V+uUrfEJJlmPznpGa6T03mkeG/qbrhF1l7K3y6OSY8SDdKneU9kf/T7zXk3kR9gQZ1fPyHpE757KUXGhzqViUzwy96j7KBOHxe+z6djcHvT7RZ1VtSCW4pHtCXcds2ee7hH5vaO3sx7RWd9iEo0p+rurnztnZNKGeKsUj2pNujy6bCqxf/ommmt09giTjlmjHTJ5q8ZqXp1vTocLPdeV75Scqu9OZ+8SDtmZrtR5YkbcvUxbZHOlPKgZcVlk6jg1G7SH0l+dHpTJNg963iNnExaER8aC9lDiIWtCW2zzuOtNwqNiQta9UsfOXorseZJHtn60h3JexiMTEzGrrpqT/dw1IxOz/zSLjhlxxkJ6ZGKu3EX0WcXj0/5svi6P6rfVeXb0ZSY3okZZi04P9+w7PaLfVC2mPeg91d5V57byZlRyVu8mHac9oianebjjq/a/2mMVD+Ws6LxSsbo8qjNyVwvCgegLum8oj+g5VD2IGhKebgu3B2FC1IyqFXX+Jg/Cr6NezqXEevVNtb7VXsiaTNc+G/eTPaZrT1ls8oi+l1s9qHc163F1HuGhrFMMqh7ZGZnwOKX+mZinPLbPRjUeNdZTPab7PJOfGpfDw1GTaYdqn7s9lNizOU97qHep8WVymPRQLSoelbs2eai1UWN1eBB3KbGp31byeLJHdkZO9qi+IV0e7+AZxNuinqXWmajVlEc2r1M9qnf9PsNhcedR6YMuD5fJ3d6J+SDzoTyIGVGX2hfVfsvEtcFDme+NFk6P/88+1SN65pTFBo9P8+fqM6IeDouneFD1mrZQPej+Ui3omk0ZKHE4jO9m4+43sn5bLCKxuGZOnTtqFt0Wrjmdnrm/9pH1c3g490/O3dW+zbPh7hHVgzj3ag9RQ9XiZI9PZ3fOxtcj3utZw2kLtZcyZ1F3u+zeN7+R+RIemTsIDyJexWODhdskey8Vq/utclpE83R7kL2TtSDuP92DfBPVuMm7aQ/qPqeH410l/TtN3B7K91f7qfqRs0ibTHpk6kG+Y1s8/oqJ9KAsqnbRvKctuj265yhqmTnb7aGakB6uN0aJfdpCNanmrcxFxkO9a4NFtUdVDyV3p4XSH10e5DuUra0ab6bnib7stKjGrL5VdA2q87fdg3qr7u4m6nGixbSHy4R4AzdZVN6hrAftou6tehD9VPnvoD0iJspyOpIxKHuzZmSfuRyI3qzGpOYx5UHmoPYC2TOZszLxVmtKzCy96Ll0znnlW7XXuz2I+SGds2c6e22TRZdr5Q1y9sWTPRxumXp9LXpMXGdP12Db6qjZ10Kv2XQc35VfPxzMN30=
   </data>
  </layer>
  <objectgroup name="entities" width="100" height="100">
-  <object name="player" type="entity" x="96" y="96" width="32" height="32"/>
+  <object name="player" type="entity" x="96" y="96" width="32" height="32">
+   <properties>
+    <property name="alignment" value="neutral"/>
+    <property name="tileset" value="player"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

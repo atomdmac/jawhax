@@ -20,10 +20,10 @@
                  "name":"player",
                  "properties":
                     {
-
+                     "alignment":"neutral",
+                     "tileset":"player"
                     },
                  "type":"entity",
-                 "visible":true,
                  "width":32,
                  "x":96,
                  "y":96
@@ -84,6 +84,21 @@
                  "passable":"false"
                 }
             },
+         "tilewidth":32
+        }, 
+        {
+         "firstgid":3,
+         "image":"..\/img\/player.png",
+         "imageheight":32,
+         "imagewidth":32,
+         "margin":0,
+         "name":"player",
+         "properties":
+            {
+
+            },
+         "spacing":0,
+         "tileheight":32,
          "tilewidth":32
         }],
  "tilewidth":32,

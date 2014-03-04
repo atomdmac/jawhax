@@ -1,8 +1,10 @@
 var Player = function (playerData) {
     var player = new jaws.Sprite({
-                        image: playerData.image,
-                        x    : playerData.x,
-                        y    : playerData.y
+                        image : playerData.image,
+                        x     : playerData.x,
+                        y     : playerData.y,
+                        width : playerData.width,
+                        height: playerData.height
                     });
     
     var cellsize = {
@@ -88,7 +90,7 @@ var Player = function (playerData) {
         player._tweenObj = new FrameTween;
         player._tweenObj.start(this, newCoords.x,
                                      newCoords.y,
-                                     30);
+                                     5);
     }
     
     player.up = function () {

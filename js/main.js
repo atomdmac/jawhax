@@ -12,112 +12,6 @@ var map =
 [0,0,0,0,0,0,0,0,0,0]
 ];
 
-var TiledMap = function (json) {
-    
-    var _json = json;
-    
-    this.getMapSize = function () {
-        return {
-            width : _json.width - 1,
-            height: _json.height - 1
-        }
-    }
-    
-    this.getCellSize = function () {
-        return {
-            width : _json.tilewidth,
-            height: _json.tileheight
-        }
-    }
-    
-    this.getLayer = function (name) {
-        var len = _json.layers.length,
-            i   = 0;
-        for (i; i<len; i++) {
-            if (_json.layers[i].name === name) {
-                return _json.layers[i];
-            }
-        }
-        return false;
-    }
-    
-    this.getCellProperty = function (x, y, layerName, propertyName) {
-        var layer = this.getLayer(layerName);
-        if (layer) {
-            var tileSetIndex = layer.data[(x * y) + x],
-                tileSet      = _json.tilesets[tileSetIndex],
-                firstGID     = tile
-                tileProps    = tileSet.tileproperties[tileSetIndex - tileset.firstgid];
-            return tileProps[propertyName];
-        } else {
-            throw("Layer '" + layerName + "' not found.");
-        }
-    }
-    
-    function _parseMap () {
-        var layers   = _json.layers,
-            len      = layers.length,
-            i        = 0,
-            curLayer = null;
-        for (i; i<len; i++) {
-            curLayer = layers[i];
-            // TODO: Parse Object layers, too!
-            if (curLayer.type === "tilelayer") {
-                _parseTileLayer(curLayer);
-            }
-        }
-    }
-    
-    function _parseTileLayer (layer) {
-        var data = layer.data,
-            len  = data.length,
-            sprites  = new jaws.SpriteList(),
-            cellSize = this.getCellSize(),
-            mapSize  = this.getMapSize(),
-            tileMap  = new jaws.TileMap({
-                "cell_size": [cellSize.width, cellSize.height],
-                "size"     : [mapSize.width,  mapSize.height]
-            });
-        
-        var x=0, y=0, i=0;
-        for (i; i<len; i++) {
-            if (x > mapSize.width) {
-                x=0;
-                y++;
-            }
-            
-            var curTile = _json.tilesets[data[i]-1];
-            
-            // Don't draw passable tiles.
-            if (curTile.name === "passable") {
-                x++;
-                continue;
-            };
-            
-            // TODO: Load map assets dynamically.
-            sprites.push(
-                new jaws.Sprite({
-                    "image": "img/impassable.png",
-                    "x"    : x * mapSize.width,
-                    "y"    : y * mapSize.height
-                })
-            );
-            
-            // Advance X coordinate.
-            x++;
-        }
-        
-        // Add sprites to jaws.TileMap for this layer.
-        tileMap.push(sprites);
-        
-        // Add reference to jaws.TileMap instance to layer object.
-        layer.tileMap = tileMap;
-    }
-    
-    // Initialize our map data!
-    _parseMap(json);
-};
-
 /*
  * Load the map and get everything ready for the Play state.
  */
@@ -145,84 +39,50 @@ var loadingState = function () {
  * Defines the normal Play state.
  */
 var playState = function () {
-    var player  ,
-        blocks  ,
-        map     = jaws.assets.get("map/test.json"),
-        terrain = map.layers[0],
-        player  = map.layers[1].objects[0],
-        cellSize = map.tilewidth, // Assume square cells.
-        tileMap ,
-        viewport;
+    var player,
+        viewport,
+        tiledMap,
+        cellSize,
+        mapSize,
+        terrainLayer;
 
     this.setup = function (options) {
         
         console.log("Switching to Play state: ", arguments);
         
-        // Map.
-        var mapH = map.height -1,
-            mapW = map.width - 1,
-            data = terrain.data,
-            len  = data.length;
+        tiledMap = options.tiledMap;
         
-        // Setup map sprites.
-        blocks = new jaws.SpriteList();
-        
-        // 
-        var x=0 , y=0, i=0;
-        for (i; i<len; i++) {
-            if (x > mapW) {
-                x=0;
-                y++;
-            }
-            
-            var curTile = map.tilesets[data[i]-1];
-            
-            // Don't draw passable tiles.
-            if (curTile.name === "passable") {
-                x++;
-                continue;
-            };
-            
-            blocks.push(
-                new jaws.Sprite({
-                    "image": "img/impassable.png",
-                    "x"    : x * cellSize,
-                    "y"    : y * cellSize
-                })
-            );
-            
-            // Advance X coordinate.
-            x++;
-        }
-        
-        viewport = new jaws.Viewport({
-            "max_x": map.width  * cellSize,
-            "max_y": map.height * cellSize
-        });
-        window.top.viewport = viewport;
-        
-        tileMap = new jaws.TileMap({
-            "cell_size": [cellSize, cellSize],
-            "size"     : [map.width, map.height]
-        });
-        tileMap.push(blocks);
+        cellSize = tiledMap.getCellSize();
+        mapSize  = tiledMap.getMapSize();
+        terrainLayer = tiledMap.getLayer("terrain");
+        floorLayer   = tiledMap.getLayer("floor");
         
         // Set-up player.
         // TODO: Make sure play position is valid (ie. whole cell value, passable, etc).
         player = new Player({
-            image    : "img/player.png",
-            x        : player.x,
-            y        : player.y,
+            image    : tiledMap.getTileImage(284), // tiledMap.assets.get("img/player.png"),
+            // TODO: Load player x/y coords from map.
+            // TODO: Load player h/w from map.
+            x        : 64,
+            y        : 64,
+            width    : 16,
+            height   : 16,
             cellSize : {
-                x: cellSize,
-                y: cellSize
+                x: 16,
+                y: 16
             },
-            collisionMap: tileMap
+            collisionMap: terrainLayer.tileMap
         });
         
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
         
-        viewport.drawTileMap(tileMap);
+        viewport = new jaws.Viewport({
+            "max_x": mapSize.width  * cellSize.width,
+            "max_y": mapSize.height * cellSize.height
+        });
+        window.top.viewport = viewport;
+        
+        console.log(terrainLayer.tileMap);
         
     },
     
@@ -251,8 +111,10 @@ var playState = function () {
     },
     
     this.draw = function () {
+        
         jaws.clear();
-        viewport.drawTileMap(tileMap);
+        viewport.drawTileMap(floorLayer.tileMap);
+        viewport.drawTileMap(terrainLayer.tileMap);
         viewport.draw(player);
     }
 }
@@ -276,17 +138,46 @@ var inventoryState = function () {
 
 // Start the game!
 jaws.onload = function () {
-    jaws.assets.add([
-                     "img/passable.png",
-                     "img/impassable.png",
-                     "img/player.png",
-                     "map/test.json"
+    jaws.init({width: 30 * 16, height: 30 *16});
+    var mapLoader = new jaws.Assets();
+    mapLoader.add([
+                     "map/test2.json"
                      ]);
     
-   // Load all resources and start game.
-    jaws.start(playState, {
-        "width": 30 * 32,
-        "height": 10 * 32
+    /*
+    mapLoader.loadAll({
+        onfinish: function () {
+            console.log("map loaded!", jaws.assets.get("map/test.json"));
+            var tiledMap = new TiledMap(jaws.assets.get("map/test.json"),
+                            {
+                                onfinish: function () {
+                                    console.log("Map Assets loaded!")
+                                    var loop = new jaws.GameLoop(new playState(), {
+                                        "width": 30 * 32,
+                                        "height": 10 * 32
+                                    },
+                                    {
+                                        tiledMap: tiledMap
+                                    });
+                                    loop.start();
+                                }
+                            });
+        }
     });
-    
+    */
+    mapLoader.loadAll({
+        onload: function () {
+            console.log("Map JSON loaded.");
+            
+            var tiledMap = new TiledMap(mapLoader.get("map/test2.json"),
+                                {
+                                    onfinish: function () {
+                                        console.log("Map assets loaded.");
+                                        
+                                        jaws.start(playState, {}, {tiledMap: tiledMap});
+                                    }
+                                });
+            
+        }
+    })
 }
